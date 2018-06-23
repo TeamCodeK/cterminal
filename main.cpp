@@ -95,11 +95,17 @@ int main() {
         } else if (isLib(cmd)) {
             addLib(cmd);
             showUser();
+            handleFileOutput("");
+            Run();
         } else if (isVar(cmd)) {
             addVar(cmd);
             showUser();
+            handleFileOutput("");
+            Run();
         } else if (isNameSpace(cmd)) {
             addNameSpace(cmd);
+            handleFileOutput("");
+            Run();
         } else {
             handleFileOutput(cmd);
             Run();
