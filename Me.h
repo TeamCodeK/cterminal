@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+
+
 namespace Me {
     // Xoa cac phan tu trong chuoi
     bool remove(std::string &input, std::string str) {
@@ -82,6 +84,11 @@ namespace Me {
             return true;
         }
         return false;
+    }
+
+    bool existFile(std::string file_name) {
+        std::ifstream i(file_name);
+        return i.good();
     }
 }
 

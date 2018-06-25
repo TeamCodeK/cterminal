@@ -46,41 +46,57 @@ bool isNameSpace(std::string cmd) {
     }
     return false;
 }
-void addLib(std::string cmd) {
-    if(cmd != "") {
-        userIncl += " " + cmd + '\n';
-    }
+inline void addLib(std::string cmd) {
+    userIncl += " " + cmd + '\n';
 } 
-void addVar(std::string cmd) {
-    if(cmd != "") {
-        userVar += " " + cmd + '\n';
-    }
+inline void addVar(std::string cmd) {
+    userVar += " " + cmd + '\n';
 }
-void addNameSpace(std::string cmd) {
-    if(cmd != "") {
-        userNameSpace += " " + cmd + '\n';
-    }
+inline void addNameSpace(std::string cmd) {
+    userNameSpace += " " + cmd + '\n';
 }
-void showUser() {
+inline void showUser() {
     std::cout << blue << "* Include :" << defa << std::endl;
     std::cout << userIncl;
     std::cout << blue << "* Var     :" << defa << std::endl;
     std::cout << userVar;
 }
 void handleFileOutput(std::string cmd) {
-    std::string buf;
-    buf += userIncl;
-    buf += userVar;
-    buf += userNameSpace;
-    buf += " int main() {";
-    buf +=      cmd;
-    buf += "           }";
+    std::string buf = "";
+    if (isVar(cmd) || isLib(cmd) || isNameSpace(cmd)) {
+        buf += userIncl;
+        buf += cmd + '\n';
+        buf += userVar;
+        buf += " int main() {";
+        buf += " return 0;   ";
+        buf += "            }";
+    }
+    else {
+        buf += userIncl;
+        buf += userVar;
+        buf += userNameSpace;
+        buf += " int main() {";
+        buf +=      cmd;
+        buf += "            }";
+    }
     Me::writeFile("Cs.cpp", buf);
 }
-void Run() {
+
+inline bool existErr() {
+    return !Me::existFile("Cs");
+}
+
+bool Run(std::string cmd) {
+    handleFileOutput(cmd);
     system("g++ -o Cs Cs.cpp");
+    
+    if (existErr() == true) {
+        system("rm -R Cs.cpp");
+        return false;
+    }
     system("./Cs");
     system("rm -R Cs.cpp Cs");
+    return true;
 }
 
 int main() {
@@ -93,22 +109,22 @@ int main() {
         if (cmd == "") {
             // NULL
         } else if (isLib(cmd)) {
-            addLib(cmd);
-            showUser();
-            handleFileOutput("");
-            Run();
+            if (Run(cmd)) {
+                addLib(cmd);
+                showUser();
+            }
         } else if (isVar(cmd)) {
-            addVar(cmd);
-            showUser();
-            handleFileOutput("");
-            Run();
+            if (Run(cmd)) {
+                addVar(cmd);
+                showUser();
+            }
         } else if (isNameSpace(cmd)) {
-            addNameSpace(cmd);
-            handleFileOutput("");
-            Run();
+            if (Run(cmd)) {
+                addNameSpace(cmd);
+                showUser();
+            }
         } else {
-            handleFileOutput(cmd);
-            Run();
+            Run(cmd);
         }
     }
     return 0;
